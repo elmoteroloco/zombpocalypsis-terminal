@@ -83,11 +83,3 @@ Esta terminal no funcionaría sin su cerebro. Toda la lógica de negocio, la bas
 ## Licencia
 
 Este proyecto está bajo la Licencia MIT. Podés ver el archivo LICENSE para más detalles.
-
----
-
-## Contacto
-
-elmoteroloco - elmoteroloco@gmail.com
-
-Link del Proyecto: https://github.com/elmoteroloco/zombpocalypsis-terminal
