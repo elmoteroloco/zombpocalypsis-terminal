@@ -1,16 +1,30 @@
 const terminal = document.getElementById("terminal")
 const output = document.getElementById("output")
 const input = document.getElementById("input")
+const inputMirror = document.getElementById("input-mirror")
+const cursor = document.getElementById("cursor")
 
 let authToken = null
 const API_URL = "http://localhost:3000/api"
 let lastListedProducts = []
 
-function printHeader() {
+async function printHeader() {
     output.innerHTML = ""
 
-    printToTerminal("Bunker Inventory System v1.0 :: Status | Conectado a la red")
-    printToTerminal("Escribí 'ayuda' para ver los comandos disponibles.")
+    try {
+        const response = await fetch("/public/ascii/logo.txt")
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        const logoText = await response.text()
+        logoText.split("\n").forEach((line) => printToTerminal(line))
+    } catch (error) {
+        console.error("No se pudo cargar el logo:", error)
+        printToTerminal("Error al cargar el logo. Iniciando sistema...")
+    } finally {
+        printToTerminal("Bunker Inventory System v1.0 :: Status | Conectado a la red")
+        printToTerminal("Escribí 'ayuda' para ver los comandos disponibles.")
+    }
 }
 
 function printToTerminal(text) {
@@ -20,13 +34,15 @@ function printToTerminal(text) {
 
 function formatHelpLine(command, description) {
     const commandColor = "#66ff66"
-    const fixedWidth = 30 // Aumentamos el ancho para que entren los comandos más largos
-    const coloredCommand = `<span style='color: ${commandColor};'>  ${command}</span>`
-    let padding = ""
-    if (fixedWidth > command.length) {
-        padding = "&nbsp;".repeat(fixedWidth - command.length)
+    const fixedWidth = 30
+    const commandWithoutEntities = command.replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+    const coloredCommand = `<span style="color: ${commandColor};">  ${command}</span>`
+    let padding = " "
+
+    if (fixedWidth > commandWithoutEntities.length) {
+        padding = ".".repeat(fixedWidth - commandWithoutEntities.length)
     }
-    return `${coloredCommand}${padding}- ${description}`
+    return `${coloredCommand} ${padding} ${description}`
 }
 
 function parseCommand(command) {
@@ -59,28 +75,61 @@ async function handleCommand(command) {
 
     switch (mainCommand) {
         case "ayuda":
-            if (commandParts[1] === "crear") {
-                printToTerminal("Uso del comando 'crear':")
-                printToTerminal('  crear "Nombre" "Descripción" <precio> <stock> <url_imagen>')
-                printToTerminal(
-                    '  Ej: crear "Gafas de Visión Nocturna" "Para ver en la oscuridad total" 250 5 "url.com/img.png"',
-                )
-            } else if (commandParts[1] === "actualizar") {
-                printToTerminal("Uso del comando 'actualizar':")
-                printToTerminal("  actualizar <#> <campo> <nuevo_valor>")
-                printToTerminal("  Campos válidos: name, description, price, stock, imageUrl.")
-                printToTerminal("  Ej: actualizar 2 stock 45")
+            const subCommand = commandParts[1]
+            if (subCommand) {
+                switch (subCommand) {
+                    case "login":
+                        printToTerminal("Uso del comando 'login':")
+                        printToTerminal("  login <email> <contraseña>")
+                        printToTerminal("  Ej: login admin@bunker.com 123456")
+                        break
+                    case "listar":
+                        printToTerminal("Uso del comando 'listar':")
+                        printToTerminal("  Muestra todos los productos del inventario.")
+                        printToTerminal("  Requiere haber iniciado sesión.")
+                        break
+                    case "inspeccionar":
+                        printToTerminal("Uso del comando 'inspeccionar':")
+                        printToTerminal("  inspeccionar <#>")
+                        printToTerminal(
+                            "  Muestra los detalles de un item usando su número de la lista (obtenido con 'listar').",
+                        )
+                        printToTerminal("  Ej: inspeccionar 1")
+                        break
+                    case "crear":
+                        printToTerminal("Uso del comando 'crear':")
+                        printToTerminal('  crear "Nombre" "Descripción" <precio> <stock> <url_imagen>')
+                        printToTerminal(
+                            '  Ej: crear "Gafas de Visión Nocturna" "Para ver en la oscuridad total" 250 5 "url.com/img.png"',
+                        )
+                        break
+                    case "actualizar":
+                        printToTerminal("Uso del comando 'actualizar':")
+                        printToTerminal("  actualizar <#> <campo> <nuevo_valor>")
+                        printToTerminal("  Campos válidos: name, description, price, stock, imageUrl.")
+                        printToTerminal("  Ej: actualizar 2 stock 45")
+                        break
+                    case "eliminar":
+                        printToTerminal("Uso del comando 'eliminar':")
+                        printToTerminal("  eliminar <#>")
+                        printToTerminal("  Elimina un item del inventario usando su número de la lista.")
+                        printToTerminal("  Ej: eliminar 3")
+                        break
+                    default:
+                        printToTerminal(`Comando 'ayuda ${subCommand}' no reconocido.`)
+                        break
+                }
             } else {
                 printToTerminal("Comandos disponibles:")
-                printToTerminal(formatHelpLine("login <email> <pass>", "Inicia sesión en el sistema.")) // Longitud: 22
-                printToTerminal(formatHelpLine("listar", "Muestra el inventario.")) // Longitud: 6
-                printToTerminal(formatHelpLine("inspeccionar <#>", "Muestra detalles de un item.")) // Longitud: 18
-                printToTerminal(formatHelpLine('crear "<nombre>" ...', "Crea un nuevo item.")) // Longitud: 21
-                printToTerminal(formatHelpLine("actualizar <#> ...", "Actualiza un item.")) // Longitud: 19
-                printToTerminal(formatHelpLine("eliminar <#>", "Elimina un item del inventario.")) // Longitud: 14
-                printToTerminal(formatHelpLine("limpiar", "Limpia la pantalla de la terminal.")) // Longitud: 7
-                printToTerminal(formatHelpLine("ayuda", "Muestra esta lista de comandos.")) // Longitud: 5
-                printToTerminal(formatHelpLine("ayuda <comando>", "Muestra ayuda específica para un comando.")) // Longitud: 15
+                printToTerminal(formatHelpLine("login &lt;email&gt; &lt;pass&gt;", "Inicia sesión en el sistema."))
+                printToTerminal(formatHelpLine("listar", "Muestra el inventario.")) // l: 6
+                printToTerminal(formatHelpLine("inspeccionar &lt;#&gt;", "Muestra detalles de un item."))
+                printToTerminal(formatHelpLine('crear "&lt;nombre&gt;" ...', "Crea un nuevo item."))
+                printToTerminal(formatHelpLine("actualizar &lt;#&gt; ...", "Actualiza un item."))
+                printToTerminal(formatHelpLine("eliminar &lt;#&gt;", "Elimina un item del inventario."))
+                printToTerminal(formatHelpLine("ayuda", "Muestra esta lista de comandos.")) // l: 5
+                printToTerminal(formatHelpLine("ayuda &lt;comando&gt;", "Muestra ayuda para un comando específico."))
+                printToTerminal(formatHelpLine("limpiar", "Limpia la pantalla de la terminal.")) // l: 7
             }
             break
 
@@ -241,4 +290,30 @@ input.addEventListener("keydown", (event) => {
     }
 })
 
+// --- Lógica para el cursor y el input espejado ---
+
+// Función para actualizar la posición del cursor
+function updateCursor() {
+    // Sincroniza el texto visible con el del input invisible
+    inputMirror.textContent = input.value
+
+    // Mide el texto hasta la posición del cursor para saber dónde ubicar el cursor de bloque
+    const textBeforeCursor = input.value.substring(0, input.selectionStart)
+    const mirror = document.createElement("span")
+    mirror.textContent = textBeforeCursor
+    document.body.appendChild(mirror) // Lo agrega temporalmente para medirlo
+    const textWidth = mirror.offsetWidth
+    document.body.removeChild(mirror)
+
+    // Mueve el cursor a la posición correcta
+    cursor.style.left = `${inputMirror.offsetLeft + textWidth}px`
+}
+
+// Actualiza el cursor en cada cambio o movimiento
+input.addEventListener("input", updateCursor)
+input.addEventListener("keydown", () => setTimeout(updateCursor, 0)) // setTimeout para keydown
+input.addEventListener("click", updateCursor)
+
+input.focus()
 printHeader()
+updateCursor() // Posición inicial del cursor

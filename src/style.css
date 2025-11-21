@@ -28,6 +28,11 @@ body {
     margin-right: 8px;
 }
 
+/* Contenedor para el texto visible y el input real */
+.input-line {
+    position: relative;
+}
+
 #input {
     background-color: transparent;
     border: none;
@@ -36,8 +41,34 @@ body {
     font-size: inherit;
     width: 100%;
     outline: none;
+    /* Hacemos invisible el texto y el cursor del input real */
+    color: transparent;
+    caret-color: transparent;
 }
 
 .command-desc {
     margin-left: 5ch;
+}
+
+@keyframes blink {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+}
+
+/* Nuestro nuevo cursor de bloque parpadeante */
+#cursor {
+    color: #00ff00;
+    animation: blink 1s step-end infinite;
+    position: absolute;
+    pointer-events: none; /* Para poder hacer clic "a través" de él */
+}
+
+/* Ocultamos el cursor si el input pierde el foco */
+#input:not(:focus) + #cursor {
+    display: none;
 }
