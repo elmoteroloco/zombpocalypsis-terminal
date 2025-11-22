@@ -14,6 +14,10 @@ body {
     justify-content: flex-end;
 }
 
+#header {
+    white-space: pre-wrap;
+}
+
 #output {
     white-space: pre-wrap;
     overflow-y: auto;
@@ -27,7 +31,12 @@ body {
 
 .input-line {
     display: flex;
-    position: relative;
+    align-items: center;
+    background-color: #1a1a1a; /* Fondo más claro para destacar */
+    border: 1px solid #333; /* Borde sutil */
+    border-radius: 5px; /* Esquinas redondeadas */
+    padding: 5px 10px;
+    margin-top: 5px;
 }
 
 .prompt {
@@ -35,17 +44,17 @@ body {
 }
 
 #input {
-    background-color: transparent;
+    background: transparent;
     border: none;
     color: #00ff00;
     font-family: inherit;
     font-size: inherit;
     width: 100%;
-    outline: none;
     padding: 0;
-    caret-color: #00ff00;
+    margin: 0;
+    caret-shape: block; /* Cursor de bloque estándar */
 }
 
-.command-desc {
-    margin-left: 5ch;
+#input:focus {
+    outline: none;
 }
