@@ -8,10 +8,25 @@
     </head>
     <body>
         <div id="terminal">
-            <div id="output"></div>
+            <div id="output" aria-live="polite">
+                <pre>
+********************************
+*                              *
+*      d88b  .o88b. d8b   db   *
+*      `8P' d8P  Y8 888o  88   *
+*       88  8P      88V8o 88   *
+*       88  8b      88 V8o88   *
+*   db. 88  Y8b  d8 88  V888   *
+*   Y8888P   `Y88P' VP   V8P   *
+*                              *
+********************************
+</pre
+                >
+                <div>Bunker Inventory System v1.0 :: Status | Conectado a la red</div>
+                <div>Escribí 'ayuda' para ver los comandos disponibles.</div>
+            </div>
             <div class="input-line">
                 <span class="prompt">></span>
-                <span id="input-mirror"></span><span id="cursor">█</span>
                 <input type="text" id="input" autofocus autocomplete="off" />
             </div>
         </div>
