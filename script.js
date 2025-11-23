@@ -55,7 +55,6 @@ function printToTerminal(text, className = "") {
 function formatHelpLine(command, description) {
     const commandColor = "#66ff66"
     const fixedWidth = 30
-    // Eliminamos la conversión inversa. Ahora el largo se calcula sobre el texto que se ve.
     const commandVisibleText = command.replace(/&lt;/g, "<").replace(/&gt;/g, ">")
     const coloredCommand = `<span style="color: ${commandColor};">  ${command}</span>`
     let padding = " "
@@ -119,6 +118,8 @@ async function showLoadingMessage(message) {
 
 function showGeneralHelp() {
     printToTerminal("Comandos disponibles:", "info")
+    printToTerminal(formatHelpLine("ayuda", "Muestra esta lista de comandos."))
+    printToTerminal(formatHelpLine("ayuda &lt;comando&gt;", "Muestra ayuda para un comando específico."))
     printToTerminal(formatHelpLine("login &lt;email&gt; &lt;pass&gt;", "Inicia sesión en el sistema."))
     printToTerminal(formatHelpLine("listar", "Muestra el inventario."))
     printToTerminal(formatHelpLine("inspeccionar &lt;#&gt;", "Muestra detalles de un item."))
@@ -126,8 +127,6 @@ function showGeneralHelp() {
     printToTerminal(formatHelpLine("actualizar &lt;#&gt; [campos...]", "Actualiza un item (Admin)."))
     printToTerminal(formatHelpLine("eliminar &lt;#&gt;", "Elimina un item (Admin)."))
     printToTerminal(formatHelpLine("setapi &lt;entorno&gt;", "Cambia la API (local/prod)."))
-    printToTerminal(formatHelpLine("ayuda", "Muestra esta lista de comandos."))
-    printToTerminal(formatHelpLine("ayuda &lt;comando&gt;", "Muestra ayuda para un comando específico."))
     printToTerminal(formatHelpLine("limpiar", "Limpia la pantalla de la terminal."))
     printToTerminal(formatHelpLine("logout", "Cierra la sesión actual."))
 }
@@ -147,6 +146,7 @@ function showCommandHelp(subCommand) {
             printToTerminal("  inspeccionar &lt;#&gt;")
             printToTerminal("  Muestra los detalles de un item usando su número de la lista (obtenido con 'listar').")
             printToTerminal("  Ej: inspeccionar 1")
+            printToTerminal("  Requiere haber iniciado sesión y corrido el comando 'listar'.")
             break
         case "crear":
             printToTerminal('  crear "Nombre" "Categoría" "Descripción" &lt;precio&gt; &lt;stock&gt; "url_imagen"')
@@ -539,6 +539,5 @@ terminal.addEventListener("click", () => {
     input.focus()
 })
 
-// Foco inicial y estado al cargar la página
 input.focus()
 updateUserStatus()
