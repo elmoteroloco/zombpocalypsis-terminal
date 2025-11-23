@@ -55,12 +55,13 @@ function printToTerminal(text, className = "") {
 function formatHelpLine(command, description) {
     const commandColor = "#66ff66"
     const fixedWidth = 30
-    const commandWithoutEntities = command.replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+    // Eliminamos la conversión inversa. Ahora el largo se calcula sobre el texto que se ve.
+    const commandVisibleText = command.replace(/&lt;/g, "<").replace(/&gt;/g, ">")
     const coloredCommand = `<span style="color: ${commandColor};">  ${command}</span>`
     let padding = " "
 
-    if (fixedWidth > commandWithoutEntities.length) {
-        padding = ".".repeat(fixedWidth - commandWithoutEntities.length)
+    if (fixedWidth > commandVisibleText.length) {
+        padding = ".".repeat(fixedWidth - commandVisibleText.length)
     }
     return `${coloredCommand} ${padding} ${description}`
 }
@@ -135,7 +136,7 @@ function showCommandHelp(subCommand) {
     printToTerminal(`Uso del comando '${subCommand}':`, "info")
     switch (subCommand) {
         case "login":
-            printToTerminal('  login "<email>" "<contraseña>"')
+            printToTerminal('  login "&lt;email&gt;" "&lt;contraseña&gt;"')
             printToTerminal("  Ej: login admin@bunker.com 123456")
             break
         case "listar":
@@ -143,18 +144,18 @@ function showCommandHelp(subCommand) {
             printToTerminal("  Requiere haber iniciado sesión.")
             break
         case "inspeccionar":
-            printToTerminal("  inspeccionar <#>")
+            printToTerminal("  inspeccionar &lt;#&gt;")
             printToTerminal("  Muestra los detalles de un item usando su número de la lista (obtenido con 'listar').")
             printToTerminal("  Ej: inspeccionar 1")
             break
         case "crear":
-            printToTerminal('  crear "Nombre" "Categoría" "Descripción" "<precio>" "<stock>" "url_imagen"')
+            printToTerminal('  crear "Nombre" "Categoría" "Descripción" &lt;precio&gt; &lt;stock&gt; "url_imagen"')
             printToTerminal("  Parámetros:")
             printToTerminal('    "Nombre"      (texto entre comillas)')
             printToTerminal('    "Categoría"   (texto entre comillas)')
             printToTerminal('    "Descripción" (texto entre comillas)')
-            printToTerminal('    "<precio>"      (número entero)')
-            printToTerminal('    "<stock>"       (número entero)')
+            printToTerminal("    &lt;precio&gt;      (número entero)")
+            printToTerminal("    &lt;stock&gt;       (número entero)")
             printToTerminal('    "url_imagen"  (texto entre comillas)')
             printToTerminal(
                 '  Ej: crear "Ración de Combate" "Comida" "Nutritiva y de larga duración" 15 50 "imgs/racion.png"',
@@ -162,20 +163,20 @@ function showCommandHelp(subCommand) {
             printToTerminal("  Requiere permisos de Administrador.")
             break
         case "actualizar":
-            printToTerminal("  actualizar <#> <campo> <nuevo_valor> [...más campos]")
+            printToTerminal("  actualizar &lt;#&gt; &lt;campo&gt; &lt;nuevo_valor&gt; [...más campos]")
             printToTerminal("  Actualiza uno o más campos de un item. Requiere al menos un campo a modificar.")
             printToTerminal("  Campos válidos: name, category, description, price, stock, imageUrl.")
             printToTerminal('  Ej: actualizar 2 stock 45 price 150 description "Nueva descripción"')
             printToTerminal("  Requiere permisos de Administrador.")
             break
         case "eliminar":
-            printToTerminal("  eliminar <#>")
+            printToTerminal("  eliminar &lt;#&gt;")
             printToTerminal("  Elimina un item del inventario usando su número de la lista.")
             printToTerminal("  Ej: eliminar 3")
             printToTerminal("  Requiere permisos de Administrador.")
             break
         case "setapi":
-            printToTerminal("  setapi <entorno>")
+            printToTerminal("  setapi &lt;entorno&gt;")
             printToTerminal("  Cambia la URL de la API a la que se conecta la terminal.")
             printToTerminal("  Entornos disponibles: 'local' (desarrollo), 'prod' (producción en la nube).")
             printToTerminal("  Ej: setapi prod")
@@ -308,7 +309,7 @@ async function handleCommand(command) {
                     printToTerminal("  El inventario está vacío.")
                 } else {
                     products.forEach((p, i) =>
-                        printToTerminal(`  <${i + 1}> [${p.id}] - ${p.name} (Stock: ${p.stock})`),
+                        printToTerminal(`  &lt;${i + 1}&gt; [${p.id}] - ${p.name} (Stock: ${p.stock})`),
                     )
                 }
                 break
