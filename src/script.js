@@ -109,17 +109,14 @@ function showCommandHelp(subCommand) {
     printToTerminal(`Uso del comando '${subCommand}':`, "info")
     switch (subCommand) {
         case "login":
-            printToTerminal("Uso del comando 'login':")
             printToTerminal("  login <email> <contraseña>")
             printToTerminal("  Ej: login admin@bunker.com 123456")
             break
         case "listar":
-            printToTerminal("Uso del comando 'listar':")
             printToTerminal("  Muestra todos los productos del inventario.")
             printToTerminal("  Requiere haber iniciado sesión.")
             break
         case "inspeccionar":
-            printToTerminal("Uso del comando 'inspeccionar':")
             printToTerminal("  inspeccionar <#>")
             printToTerminal("  Muestra los detalles de un item usando su número de la lista (obtenido con 'listar').")
             printToTerminal("  Ej: inspeccionar 1")
@@ -146,20 +143,17 @@ function showCommandHelp(subCommand) {
             printToTerminal("  Requiere permisos de Administrador.")
             break
         case "eliminar":
-            printToTerminal("Uso del comando 'eliminar':")
             printToTerminal("  eliminar <#>")
             printToTerminal("  Elimina un item del inventario usando su número de la lista.")
             printToTerminal("  Ej: eliminar 3")
             printToTerminal("  Requiere permisos de Administrador.")
             break
         case "ayuda":
-            printToTerminal("Uso del comando 'ayuda':")
             printToTerminal("  ayuda [comando]")
             printToTerminal("  Muestra la lista general de comandos o la ayuda para un comando específico.")
             printToTerminal("  Ej: ayuda listar")
             break
         case "limpiar":
-            printToTerminal("Uso del comando 'limpiar':")
             printToTerminal("  Limpia toda la información de la pantalla de la terminal.")
             break
         case "logout":
@@ -179,7 +173,12 @@ async function handleCommand(command) {
         return
     }
 
-    if (command.trim() !== "") {
+    if (isFirstCommand) {
+        logo.style.display = "none"
+        isFirstCommand = false
+    }
+
+    if (command.trim() !== "" && (!pendingAction || command.toLowerCase() !== "s")) {
         commandHistory.unshift(command)
     }
     historyIndex = -1
@@ -298,11 +297,6 @@ async function handleCommand(command) {
                 loadingMessageElement.remove()
                 const product = await inspectResponse.json()
                 printProductDetails(product)
-            } catch (error) {
-                printToTerminal(
-                    "Error de conexión: No se pudo comunicar con el servidor del búnker. ¿Está el servidor iniciado?",
-                )
-            }
                 break
 
             case "crear":
@@ -382,29 +376,75 @@ async function handleCommand(command) {
                 printToTerminal(`¿Estás seguro de que querés continuar? (S/N)`)
                 break
 
-        case "actualizar":
             default:
                 printToTerminal(
                     `Comando '${command}' no reconocido. Escribí 'ayuda' para ver la lista de comandos.`,
                     "error",
                 )
                 break
+        }
+    } catch (error) {
+        if (loadingMessageElement) {
+            loadingMessageElement.remove()
+        }
+        if (error instanceof TypeError && lastListedProducts.length === 0 && mainCommand !== "listar") {
+            printToTerminal("Error: La lista de productos está vacía. Ejecutá 'listar' primero.", "error")
+        } else {
+            printToTerminal(
+                "Error de conexión: No se pudo comunicar con el servidor del búnker. ¿Está el servidor iniciado?",
+                "error",
+            )
+        }
+    }
+}
+
+async function executePendingAction(action, productId, args) {
+    let loadingMessageElement = null
+    const validFields = ["name", "category", "description", "price", "stock", "imageUrl"]
+
+    try {
+        if (action === "actualizar") {
+            if (args.length === 0 || args.length % 2 !== 0) {
+                printToTerminal(
+                    "Error: Se debe proporcionar al menos un par de 'campo valor'. Usá 'ayuda actualizar'.",
+                    "error",
+                )
+                return
             }
-            const updateIndex = parseInt(commandParts[1], 10) - 1
-            const updateField = commandParts[2]
-            let updateValue = commandParts[3]
-            if (updateField === "price" || updateField === "stock") {
-                updateValue = parseInt(updateValue, 10)
+
+            const fieldsToUpdate = {}
+            for (let i = 0; i < args.length; i += 2) {
+                const field = args[i]
+                let value = args[i + 1]
+
+                if (!validFields.includes(field)) {
+                    printToTerminal(`Error: El campo '${field}' no es válido. Usá 'ayuda actualizar'.`, "error")
+                    return
+                }
+
+                if (field === "price" || field === "stock") {
+                    value = parseInt(value, 10)
+                    if (isNaN(value)) {
+                        printToTerminal(`Error: El valor para '${field}' debe ser un número.`, "error")
+                        return
+                    }
+                }
+                fieldsToUpdate[field] = value
             }
-            try {
-                const updateProductId = lastListedProducts[updateIndex].id
-                const response = await fetch(`${API_URL}/products/${updateProductId}`, {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json", Authorization: `Bearer ${authToken}` },
-                    body: JSON.stringify({ [updateField]: updateValue }),
-                })
-                const updatedProduct = await response.json()
-                printToTerminal("Item actualizado:")
+
+            loadingMessageElement = await showLoadingMessage(`Actualizando item con ID: ${productId}...`)
+
+            const updateResponse = await fetch(`${API_URL}/products/edit/${productId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${authToken}` },
+                body: JSON.stringify(fieldsToUpdate),
+            })
+
+            loadingMessageElement.remove()
+            const updatedProduct = await updateResponse.json()
+
+            if (updateResponse.ok) {
+                printToTerminal("Item actualizado con éxito.", "success")
                 printProductDetails(updatedProduct)
             } else {
                 printToTerminal(`Error al actualizar: ${updatedProduct.message}`, "error")
@@ -457,5 +497,6 @@ terminal.addEventListener("click", () => {
     input.focus()
 })
 
-// Foco inicial al cargar la página
+// Foco inicial y estado al cargar la página
 input.focus()
+updateUserStatus()
