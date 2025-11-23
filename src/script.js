@@ -43,12 +43,42 @@ function parseCommand(command) {
 }
 
 function printProductDetails(product) {
-    printToTerminal(`--- Ficha de Item: ${product.name} ---`)
-    printToTerminal(`  ID: ${product.id}`)
-    printToTerminal(`  Descripción: ${product.description}`)
-    printToTerminal(`  Precio: ${product.price} créditos`)
-    printToTerminal(`  Stock: ${product.stock} unidades`)
-    printToTerminal(`  Imagen: ${product.imageUrl}`)
+    const detailsHtml = `
+<div class="product-details-container">
+    <div class="product-text-details">--- Ficha de Item: ${product.name} ---
+  ID:          ${product.id}
+  Categoría:   ${product.category}
+  Descripción: ${product.description}
+  Precio:      ${product.price} créditos
+  Stock:       ${product.stock} unidades
+    </div>
+    <img src="${product.imageUrl}" alt="Imagen de ${product.name}" class="product-image" onerror="this.style.display='none'">
+</div>`
+    printToTerminal(detailsHtml, "info")
+}
+
+function updateUserStatus() {
+    if (authToken) {
+        const payload = JSON.parse(atob(authToken.split(".")[1]))
+        userRole = payload.role
+        connectionStatus.innerHTML = `Status | <span class="success">Conectado</span> :: User: ${payload.email} (<span class="info">${userRole}</span>)`
+        if (userRole === "admin") {
+            promptElement.textContent = "#"
+            promptElement.classList.add("prompt-admin")
+        } else {
+            promptElement.textContent = ">"
+            promptElement.classList.remove("prompt-admin")
+        }
+    } else {
+        userRole = "guest"
+        connectionStatus.innerHTML = `Status | <span class="error">Desconectado</span>`
+        promptElement.textContent = ">"
+        promptElement.classList.remove("prompt-admin")
+    }
+}
+
+async function showLoadingMessage(message) {
+    return printToTerminal(message, "loading")
 }
 
 function showGeneralHelp() {

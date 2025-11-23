@@ -43,6 +43,11 @@ body {
     margin-right: 8px;
 }
 
+/* Estilo para el prompt de admin */
+.prompt-admin {
+    color: #ff6347; /* Tomato Red */
+}
+
 #input {
     background: transparent;
     border: none;
@@ -57,4 +62,42 @@ body {
 
 #input:focus {
     outline: none;
+}
+
+/* Contenedor para la ficha de producto con imagen */
+.product-details-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border: 1px solid #333;
+    padding: 10px;
+    margin-top: 5px;
+    background-color: #050505;
+}
+
+.product-text-details {
+    flex-grow: 1;
+    white-space: pre-wrap;
+}
+
+.product-image {
+    max-width: 150px; /* Aproximadamente 5cm, pero adaptable */
+    max-height: 150px;
+    margin-left: 20px;
+    border: 1px solid #00ff00;
+    background-color: #222;
+}
+
+/* Clases para colores de texto */
+.error {
+    color: #ff4136; /* Rojo */
+}
+.success {
+    color: #32cd32; /* Verde Lima */
+}
+.info {
+    color: #00ffff; /* Cian brillante */
+}
+.loading {
+    color: #fdfd96; /* Amarillo pálido */
 }
