@@ -136,7 +136,7 @@ function showCommandHelp(subCommand) {
     switch (subCommand) {
         case "login":
             printToTerminal('  login "&lt;email&gt;" "&lt;contraseña&gt;"')
-            printToTerminal("  Ej: login admin@bunker.com 123456")
+            printToTerminal("  Ej: login rompecabezas@bunker.com 5w0rdfi5h")
             break
         case "listar":
             printToTerminal("  Muestra todos los productos del inventario.")
