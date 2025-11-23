@@ -2,7 +2,7 @@
 
 Interfaz de terminal para gestion de inventarios de suministros en "Zombpocalypsis" consumiendo los datos de su [API hermana](URL_AL_REPO_DEL_BACKEND).
 
-**[>>> Probá la terminal acá <<<]((https://elmoteroloco.github.io/zombpocalypsis-terminal/))**
+**[>>> Probá la terminal acá <<<]((https://elmoteroloco.github.io/zombpocalypsis-terminal/src/index.html))**
 
 ---
 
