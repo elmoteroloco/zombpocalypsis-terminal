@@ -32,9 +32,9 @@ body {
 .input-line {
     display: flex;
     align-items: center;
-    background-color: #1a1a1a; /* Fondo más claro para destacar */
-    border: 1px solid #333; /* Borde sutil */
-    border-radius: 5px; /* Esquinas redondeadas */
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 5px;
     padding: 5px 10px;
     margin-top: 5px;
 }
@@ -43,9 +43,8 @@ body {
     margin-right: 8px;
 }
 
-/* Estilo para el prompt de admin */
 .prompt-admin {
-    color: #ff6347; /* Tomato Red */
+    color: #ff6347;
 }
 
 #input {
@@ -57,14 +56,12 @@ body {
     width: 100%;
     padding: 0;
     margin: 0;
-    caret-shape: block; /* Cursor de bloque estándar */
 }
 
 #input:focus {
     outline: none;
 }
 
-/* Contenedor para la ficha de producto con imagen */
 .product-details-container {
     display: flex;
     justify-content: space-between;
@@ -81,23 +78,22 @@ body {
 }
 
 .product-image {
-    max-width: 150px; /* Aproximadamente 5cm, pero adaptable */
+    max-width: 150px;
     max-height: 150px;
     margin-left: 20px;
     border: 1px solid #00ff00;
     background-color: #222;
 }
 
-/* Clases para colores de texto */
 .error {
-    color: #ff4136; /* Rojo */
+    color: #ff4136;
 }
 .success {
-    color: #32cd32; /* Verde Lima */
+    color: #32cd32;
 }
 .info {
-    color: #00ffff; /* Cian brillante */
+    color: #00ffff;
 }
 .loading {
-    color: #fdfd96; /* Amarillo pálido */
+    color: #fdfd96;
 }

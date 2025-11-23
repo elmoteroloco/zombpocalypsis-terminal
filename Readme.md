@@ -1,6 +1,6 @@
 # Zombpocalypsis Terminal
 
-Interfaz de terminal para gestion del inventario de suministros en Zombpocalypsis consumiendo los datos de su [API hermana](URL_AL_REPO_DEL_BACKEND).
+Interfaz de terminal para gestion de inventarios de suministros en "Zombpocalypsis" consumiendo los datos de su [API hermana](URL_AL_REPO_DEL_BACKEND).
 
 **[>>> Probá la terminal acá <<<](URL_A_GITHUB_PAGES_CUANDO_ESTE_DESPLEGADO)**
 
@@ -8,7 +8,7 @@ Interfaz de terminal para gestion del inventario de suministros en Zombpocalypsi
 
 ## Sobre el Proyecto
 
-`zombpocalypsis-terminal` es una aplicación estática que simula una experiencia de terminal de los años 80/90. No es solo una demo técnica, sino la **prueba de concepto de una mecánica de juego central** para un hipotético RPG de supervivencia.
+`zombpocalypsis-terminal` es una aplicación estática que simula una experiencia de terminal de los años 80/90. No es solo una demo técnica, sino la **prueba de concepto de una mecánica de juego** para un hipotético RPG de supervivencia.
 
 El objetivo es proporcionar una interfaz inmersiva donde el jugador, a través de comandos, interactúa con el mundo del juego para:
 
@@ -46,7 +46,7 @@ Este proyecto se desarrolla en fases, comenzando con un Producto Mínimo Viable 
 *El objetivo es construir el núcleo jugable y desplegar una versión funcional.*
 
 -   [ ] **Sistema de Contenedores (Backend):** Implementar una colección `inventarios` en Firestore que funcione como base para cualquier tipo de contenedor de ítems (mochilas, almacenes, etc.).
--   [ ] **API de Mochila Personal (Backend):** Crear los endpoints (`/api/mochila`) que permitan a un usuario gestionar su propio inventario.
+-   [x] **API de Mochila Personal (Backend):** Crear los endpoints (`/api/mochila`) que permitan a un usuario gestionar su propio inventario.
 -   [ ] **Comandos de Jugador (Frontend):** Desarrollar los comandos `mochila`, `comprar` y `vender` para interactuar con la API.
 -   [ ] **Despliegue Inicial:** Publicar la API en Vercel y la terminal en GitHub Pages para tener una versión funcional y accesible.
 
@@ -63,14 +63,6 @@ Este proyecto se desarrolla en fases, comenzando con un Producto Mínimo Viable 
 -   [ ] **Sistema de Misiones:** Crear la lógica y los comandos (`misiones`, `aceptar`) para un diario de misiones.
 -   [ ] **Progresión del Personaje:** Implementar comandos como `stats` y `perks` para mostrar la evolución del jugador.
 -   [ ] **Comunicaciones:** Desarrollar un sistema de `radio` o `chat` para recibir mensajes de NPCs o interactuar con otros jugadores.
-
----
-
-## Instalación y Uso Local
-
-1.  Cloná este repositorio: `git clone https://github.com/tu_usuario/zombpocalypsis-terminal.git`
-2.  Navegá a la carpeta: `cd zombpocalypsis-terminal`
-3.  Abrí `index.html` en tu navegador.
 
 ---
 
