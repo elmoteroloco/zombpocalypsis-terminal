@@ -135,7 +135,7 @@ function showCommandHelp(subCommand) {
     printToTerminal(`Uso del comando '${subCommand}':`, "info")
     switch (subCommand) {
         case "login":
-            printToTerminal("  login <email> <contraseña>")
+            printToTerminal('  login "<email>" "<contraseña>"')
             printToTerminal("  Ej: login admin@bunker.com 123456")
             break
         case "listar":
@@ -148,13 +148,13 @@ function showCommandHelp(subCommand) {
             printToTerminal("  Ej: inspeccionar 1")
             break
         case "crear":
-            printToTerminal('  crear "Nombre" "Categoría" "Descripción" <precio> <stock> "url_imagen"')
+            printToTerminal('  crear "Nombre" "Categoría" "Descripción" "<precio>" "<stock>" "url_imagen"')
             printToTerminal("  Parámetros:")
             printToTerminal('    "Nombre"      (texto entre comillas)')
             printToTerminal('    "Categoría"   (texto entre comillas)')
             printToTerminal('    "Descripción" (texto entre comillas)')
-            printToTerminal("    <precio>      (número entero)")
-            printToTerminal("    <stock>       (número entero)")
+            printToTerminal('    "<precio>"      (número entero)')
+            printToTerminal('    "<stock>"       (número entero)')
             printToTerminal('    "url_imagen"  (texto entre comillas)')
             printToTerminal(
                 '  Ej: crear "Ración de Combate" "Comida" "Nutritiva y de larga duración" 15 50 "imgs/racion.png"',
