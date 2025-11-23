@@ -7,15 +7,35 @@ const logo = document.getElementById("logo")
 
 let authToken = null
 let userRole = "guest"
-const API_URL =
-    window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
-        ? "http://localhost:3000/api"
-        : "https://zombpocalypsis.vercel.app/api"
+const API_URLS = {
+    local: "http://localhost:3000/api",
+    prod: "https://zombpocalypsis.vercel.app/api",
+}
+let currentApiEnv = window.location.protocol === "https:" ? "prod" : "local"
+let API_URL = API_URLS[currentApiEnv]
 let lastListedProducts = []
 let commandHistory = []
 let historyIndex = -1
 let isFirstCommand = true
 let pendingAction = null
+
+function updateApiUrl(env) {
+    if (API_URLS[env]) {
+        currentApiEnv = env
+        API_URL = API_URLS[env]
+        printToTerminal(
+            `Conexión establecida con el entorno: <span class="info">${env.toUpperCase()}</span> (${API_URL})`,
+            "success",
+        )
+        if (authToken) {
+            authToken = null
+            updateUserStatus()
+            printToTerminal("Se requiere nuevo inicio de sesión para el entorno seleccionado.", "info")
+        }
+    } else {
+        printToTerminal(`Error: Entorno '${env}' no reconocido. Disponibles: local, prod.`, "error")
+    }
+}
 
 function clearTerminal() {
     output.innerHTML = ""
@@ -74,7 +94,9 @@ function updateUserStatus() {
     if (authToken) {
         const payload = JSON.parse(atob(authToken.split(".")[1]))
         userRole = payload.role
-        connectionStatus.innerHTML = `Status | <span class="success">Conectado</span> :: User: ${payload.email} (<span class="info">${userRole}</span>)`
+        connectionStatus.innerHTML = `Status | <span class="success">Conectado</span> :: User: ${
+            payload.email
+        } (<span class="info">${userRole}</span>) :: API: <span class="info">${currentApiEnv.toUpperCase()}</span>`
         if (userRole === "admin") {
             promptElement.textContent = "#"
             promptElement.classList.add("prompt-admin")
@@ -84,7 +106,7 @@ function updateUserStatus() {
         }
     } else {
         userRole = "guest"
-        connectionStatus.innerHTML = `Status | <span class="error">Desconectado</span>`
+        connectionStatus.innerHTML = `Status | <span class="error">Desconectado</span> :: API: <span class="info">${currentApiEnv.toUpperCase()}</span>`
         promptElement.textContent = ">"
         promptElement.classList.remove("prompt-admin")
     }
@@ -102,6 +124,7 @@ function showGeneralHelp() {
     printToTerminal(formatHelpLine("crear [parámetros...]", "Crea un nuevo item (Admin)."))
     printToTerminal(formatHelpLine("actualizar &lt;#&gt; [campos...]", "Actualiza un item (Admin)."))
     printToTerminal(formatHelpLine("eliminar &lt;#&gt;", "Elimina un item (Admin)."))
+    printToTerminal(formatHelpLine("setapi &lt;entorno&gt;", "Cambia la API (local/prod)."))
     printToTerminal(formatHelpLine("ayuda", "Muestra esta lista de comandos."))
     printToTerminal(formatHelpLine("ayuda &lt;comando&gt;", "Muestra ayuda para un comando específico."))
     printToTerminal(formatHelpLine("limpiar", "Limpia la pantalla de la terminal."))
@@ -150,6 +173,12 @@ function showCommandHelp(subCommand) {
             printToTerminal("  Elimina un item del inventario usando su número de la lista.")
             printToTerminal("  Ej: eliminar 3")
             printToTerminal("  Requiere permisos de Administrador.")
+            break
+        case "setapi":
+            printToTerminal("  setapi <entorno>")
+            printToTerminal("  Cambia la URL de la API a la que se conecta la terminal.")
+            printToTerminal("  Entornos disponibles: 'local' (desarrollo), 'prod' (producción en la nube).")
+            printToTerminal("  Ej: setapi prod")
             break
         case "ayuda":
             printToTerminal("  ayuda [comando]")
@@ -218,6 +247,15 @@ async function handleCommand(command) {
 
             case "limpiar":
                 clearTerminal()
+                break
+
+            case "setapi":
+                const env = commandParts[1]
+                if (env) {
+                    updateApiUrl(env.toLowerCase())
+                } else {
+                    printToTerminal("Error: Se requiere un entorno (local/prod). Uso: setapi <entorno>", "error")
+                }
                 break
 
             case "login":
@@ -390,13 +428,13 @@ async function handleCommand(command) {
         if (loadingMessageElement) {
             loadingMessageElement.remove()
         }
-        if (error instanceof TypeError && lastListedProducts.length === 0 && mainCommand !== "listar") {
-            printToTerminal("Error: La lista de productos está vacía. Ejecutá 'listar' primero.", "error")
-        } else {
+        if (error instanceof TypeError) {
             printToTerminal(
-                "Error de conexión: No se pudo comunicar con el servidor del búnker. ¿Está el servidor iniciado?",
+                `Error de conexión: No se pudo comunicar con la API en ${API_URL}. ¿Está el servidor online?`,
                 "error",
             )
+        } else {
+            printToTerminal(`Error inesperado: ${error.message}`, "error")
         }
     }
 }
